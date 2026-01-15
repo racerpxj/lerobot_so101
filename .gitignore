@@ -1,0 +1,10 @@
+dataset/
+paligemma/
+pi05_*/
+*.safetensors
+*.mp4
+*.png
+*.jpg
+*.jpeg
+__pycache__/
+*.pyc
