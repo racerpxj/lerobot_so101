@@ -25,14 +25,24 @@ def update_policy_preprocessor(path: Path, new_tokenizer: str) -> bool:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Update tokenizer_name in policy_preprocessor.json")
-    parser.add_argument("--root", action="append", required=True, help="Model directory to update")
-    parser.add_argument("--tokenizer", required=True, help="New tokenizer path")
+    parser.add_argument("--model", action="append", help="Model directory to update (repeatable)")
+    parser.add_argument("--paligemma", help="New paligemma/tokenizer path")
+    parser.add_argument("--root", action="append", help="Alias of --model")
+    parser.add_argument("--tokenizer", help="Alias of --paligemma")
     args = parser.parse_args()
 
+    model_roots = args.model or []
+    if args.root:
+        model_roots.extend(args.root)
+    tokenizer_path = args.paligemma or args.tokenizer
+
+    if not model_roots or not tokenizer_path:
+        raise SystemExit("Usage: --model <dir> --paligemma <path> (both required)")
+
     updated_any = False
-    for root in [Path(p) for p in args.root]:
+    for root in [Path(p) for p in model_roots]:
         preproc = root / "policy_preprocessor.json"
-        if update_policy_preprocessor(preproc, args.tokenizer):
+        if update_policy_preprocessor(preproc, tokenizer_path):
             print(f"updated: {preproc}")
             updated_any = True
         else:
